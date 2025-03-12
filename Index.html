@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transkrypcja mowy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin-top: 20px;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 50px;
+            display: inline-block;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Transkrypcja mowy</h1>
+    <button onclick="startRecognition()">🎤 Rozpocznij nagrywanie</button>
+    <div id="output">Tutaj pojawi się tekst...</div>
+
+    <script>
+        function startRecognition() {
+            const output = document.getElementById("output");
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = "pl-PL";
+            recognition.interimResults = true;
+
+            recognition.onresult = function(event) {
+                let transcript = "";
+                for (let i = 0; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                output.textContent = transcript;
+            };
+
+            recognition.onerror = function(event) {
+                output.textContent = "Błąd: " + event.error;
+            };
+
+            recognition.start();
+        }
+    </script>
+</body>
+</html>
