@@ -24,32 +24,57 @@
             display: inline-block;
             width: 80%;
         }
+        #lamp {
+            width: 50px;
+            height: 50px;
+            background-color: gray;
+            border-radius: 50%;
+            display: inline-block;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>Transkrypcja mowy</h1>
-    <button onclick="startRecognition()">🎤 Rozpocznij nagrywanie</button>
+    <button onclick="startRecognition()">🎤 Rozpocznij nasłuchiwanie</button>
     <div id="output">Tutaj pojawi się tekst...</div>
+    <div id="lamp"></div>
 
     <script>
+        let recognition;
+
         function startRecognition() {
             const output = document.getElementById("output");
-            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            const lamp = document.getElementById("lamp");
+            
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = "pl-PL";
+            recognition.continuous = true;
             recognition.interimResults = true;
 
             recognition.onresult = function(event) {
                 let transcript = "";
                 for (let i = 0; i < event.results.length; i++) {
-                    transcript += event.results[i][0].transcript;
+                    transcript += event.results[i][0].transcript + " ";
                 }
                 output.textContent = transcript;
+                
+                if (transcript.includes("komputerku")) {
+                    lamp.style.backgroundColor = "red";
+                } else if (transcript.includes("to tyle")) {
+                    lamp.style.backgroundColor = "gray";
+                }
             };
 
             recognition.onerror = function(event) {
                 output.textContent = "Błąd: " + event.error;
             };
 
+            recognition.onend = function() {
+                // Automatyczne ponowne uruchomienie nasłuchiwania
+                recognition.start();
+            };
+            
             recognition.start();
         }
     </script>
